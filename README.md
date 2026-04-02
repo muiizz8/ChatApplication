@@ -1,67 +1,63 @@
-# UDP JSON Dashboard (RxGUI)
+# ChatApplication (RxGUI)
 
-A professional, cross-platform telemetry dashboard built with **Avalonia UI** and **.NET 9**. This tool provides a real-time interface for monitoring, testing, and interacting with telemetry systems using JSON-formatted data over UDP.
+A high-performance, cross-platform messaging and telemetry dashboard built with **Avalonia UI** and **.NET 9**. This application enables real-time communication over UDP and TCP, featuring a modern user interface powered by **Actipro Software** controls.
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![.NET](https://img.shields.io/badge/.NET-9.0-purple.svg)
-![AvaloniaUI](https://img.shields.io/badge/AvaloniaUI-11.3-red.svg)
+[![.NET 9.0](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![Avalonia UI](https://img.shields.io/badge/Avalonia-11.3.12-red.svg)](https://avaloniaui.net/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 🎥 Demo
+## 🚀 Features
 
-
-https://github.com/user-attachments/assets/df0cef9c-ba75-4b53-8a8b-bd483e303150
-
-
-
----
-
-## 🚀 Key Features
-
-- **Real-time Telemetry:** Seamlessly send and receive telemetry data via UDP.
-- **Multi-Instance Management:** Easily configure and switch between different network profiles (Local/Remote IP and Ports).
-- **Flexible JSON Editor:** Edit telemetry payloads with a built-in editor using string literals for maximum flexibility, bypassing the need for fixed data classes.
-- **Comprehensive Logging:** View incoming (RX) and outgoing (TX) messages with timestamps and endpoint details.
-- **Persistent Configuration:** All settings are stored in an organized `Config.inf` file for easy portability.
-- **Modern UI/UX:** Leveraging **Actipro Software** controls and **Avalonia UI** for a high-performance, themed user experience.
-- **Data Persistence:** Integrated SQLite support for long-term data management.
+- **Multi-Protocol Support:** Seamlessly send and receive data via UDP and TCP.
+- **Instance Management:** Configure and switch between multiple network profiles (Local/Remote IP and Ports) effortlessly.
+- **Modern UI/UX:** Leveraging **Actipro Software** controls for a professional, high-performance themed experience.
+- **Real-time Telemetry:** Built-in JSON editor for flexible telemetry payload management.
+- **Data Persistence:** Integrated **SQLite** support for long-term data logging and management.
+- **Comprehensive Logging:** Real-time monitoring of incoming (RX) and outgoing (TX) traffic with timestamps.
 
 ## 🛠️ Technology Stack
 
 - **Framework:** .NET 9.0
-- **UI Framework:** [Avalonia UI](https://avaloniaui.net/) (v11.3.12)
-- **Networking:** [NetCoreServer](https://github.com/chronoxor/NetCoreServer) for high-performance UDP communication.
-- **JSON Handling:** [Newtonsoft.Json](https://www.newtonsoft.com/json) for robust serialization/deserialization.
-- **UI Components:** [Actipro Software Avalonia Controls](https://www.actiprosoftware.com/products/controls/avalonia) for professional-grade UI elements.
-- **Database:** [sqlite-net-pcl](https://github.com/praeclarum/sqlite-net) for lightweight data storage.
-- **Configuration:** Salaros.ConfigParser for INI-based configuration management.
+- **UI Framework:** [Avalonia UI](https://avaloniaui.net/)
+- **Networking:** [NetCoreServer](https://github.com/chronoxor/NetCoreServer) for high-performance communication.
+- **JSON Handling:** [Newtonsoft.Json](https://www.newtonsoft.com/json)
+- **UI Components:** [Actipro Software Avalonia Controls](https://www.actiprosoftware.com/products/controls/avalonia)
+- **Database:** [sqlite-net-pcl](https://github.com/praeclarum/sqlite-net)
+- **Configuration:** Salaros.ConfigParser for INI-based settings.
+
+## 📁 Project Structure
+
+- **ModelUI/ChatApplication**: The main Avalonia UI application project.
+- **ModelUI/ChatCore**: Core logic, shared interfaces, and data models.
+- **ModelUI/Docs**: Documentation assets including screenshots and demos.
 
 ## 🏁 Getting Started
 
 ### Prerequisites
 
-- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) installed on your machine.
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 
-### Installation & Run
+### Running the Application
 
 1. **Clone the repository:**
    ```bash
    git clone <repository-url>
-   cd udp-json-dashboard
+   cd ChatApplication
    ```
 
 2. **Restore dependencies:**
    ```bash
-   dotnet restore
+   dotnet restore ModelUI/ChatApplication.sln
    ```
 
-3. **Run the application:**
+3. **Run the project:**
    ```bash
-   dotnet run --project "ModelUI-master (Copy)/RxGUI/RxGUI.csproj"
+   dotnet run --project ModelUI/ChatApplication/ChatApplication.csproj
    ```
 
 ## ⚙️ Configuration
 
-The application uses a `Config.inf` file located in the root directory to manage instances and network settings. While these can be modified via the UI, the structure is as follows:
+The application uses a `Config.inf` file for persistent settings. Example structure:
 
 ```ini
 [Network]
@@ -77,23 +73,14 @@ InstanceId=InstanceA
 Names=InstanceA, InstanceB
 ```
 
-## 📖 Usage
+## 🖼️ Preview
 
-1. **Setup Instances:** Use the sidebar to add or select a network instance.
-2. **Start Server:** Click **Start Server** to begin listening for incoming telemetry on your local port.
-3. **Send Telemetry:**
-   - Prepare your JSON payload in the editor.
-   - Click **Send JSON** to transmit the data to the configured remote endpoint.
-4. **Monitor Logs:** Switch to the **Logs** view to inspect real-time traffic, including raw JSON payloads and metadata.
+![Application Screenshot](ModelUI/Docs/Screenshot%20(52).png)
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request or open an issue for any bugs or feature requests.
-
-## 🎖️ Credits
-
-Special thanks to **[@uxmanz](https://github.com/uxmanz)** for creating the **Base Model UI ViewPanels**. His template significantly streamlined the development process, allowing for easy expansion and customization of the dashboard components.
+Contributions are welcome! Feel free to open an issue or submit a pull request.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
