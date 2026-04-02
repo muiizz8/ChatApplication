@@ -17,6 +17,14 @@ public sealed class ChatMessage : INotifyPropertyChanged
     public MessageType MessageType { get; set; } = MessageType.Message;
     public bool RequiresYesNo { get; set; }
 
+    /// <summary>MessageId of the message this is a reply to (empty if not a reply).</summary>
+    public string ReplyToId { get; set; } = "";
+
+    /// <summary>Short preview of the original message text, for display in the reply bubble.</summary>
+    public string ReplyToText { get; set; } = "";
+
+    public bool HasReplyContext => !string.IsNullOrEmpty(ReplyToId);
+
     private bool _isDelivered;
     /// <summary>True once the remote side has acknowledged receipt of this sent message.</summary>
     public bool IsDelivered

@@ -22,6 +22,7 @@ public sealed class ChatEngine
 
     public InstanceConfig? CurrentInstance => _currentInstance;
     public string CurrentProtocol => _currentProtocol;
+    public bool IsServerRunning { get; private set; }
 
     public ChatEngine(IChatStorage storage, IConfigProvider configProvider)
     {
@@ -48,6 +49,9 @@ public sealed class ChatEngine
     public void SetCurrentInstance(InstanceConfig instance)
     {
         _currentInstance = instance;
+        // If the server is already running, reconfigure the send endpoint immediately.
+        if (IsServerRunning && TryParseEndpoint(instance.RemoteIp, instance.RemotePort, out var remoteIp, out var remotePort))
+            _transport?.Connect(remoteIp, remotePort);
     }
 
     public IEnumerable<ChatMessage> LoadHistory()
@@ -63,14 +67,20 @@ public sealed class ChatEngine
     public void StartServer()
     {
         if (_currentInstance == null) { OnDebug("No instance selected."); return; }
-        if (!TryParseEndpoint(_currentInstance.LocalIp, _currentInstance.LocalPort, out var ip, out var port)) return;
-        _transport?.StartServer(ip, port);
+        if (!TryParseEndpoint(_currentInstance.LocalIp, _currentInstance.LocalPort, out var localIp, out var localPort)) return;
+        if (!TryParseEndpoint(_currentInstance.RemoteIp, _currentInstance.RemotePort, out var remoteIp, out var remotePort)) return;
+
+        // Configure the send endpoint before starting so Send() works immediately.
+        _transport?.Connect(remoteIp, remotePort);
+        _transport?.StartServer(localIp, localPort);
+        IsServerRunning = true;
         ConnectionStatusChanged?.Invoke("Listening");
     }
 
     public void StopServer()
     {
         _transport?.StopServer();
+        IsServerRunning = false;
         ConnectionStatusChanged?.Invoke("Stopped");
     }
 
@@ -88,7 +98,8 @@ public sealed class ChatEngine
         ConnectionStatusChanged?.Invoke("Disconnected");
     }
 
-    public void SendMessage(string text, MessageType type = MessageType.Message, bool requiresYesNo = false)
+    public void SendMessage(string text, MessageType type = MessageType.Message, bool requiresYesNo = false,
+                            string replyToId = "", string replyToText = "")
     {
         if (_currentInstance == null) { OnDebug("No instance selected."); return; }
         var remote = $"{_currentInstance.RemoteIp}:{_currentInstance.RemotePort}";
@@ -101,7 +112,9 @@ public sealed class ChatEngine
             IsSent = true,
             Remote = remote,
             MessageType = type,
-            RequiresYesNo = requiresYesNo
+            RequiresYesNo = requiresYesNo,
+            ReplyToId = replyToId,
+            ReplyToText = replyToText
         };
 
         var wire = WireMessage.Serialize(msg);
@@ -119,8 +132,8 @@ public sealed class ChatEngine
             MessageType.PilotRequest   => MessageType.MachineResponse,
             _                          => MessageType.Message
         };
-        SendMessage(response, responseType, false);
-        // Update original message to remove the yes/no prompt
+        var preview = originalMsg.Text.Length > 60 ? originalMsg.Text[..60] + "…" : originalMsg.Text;
+        SendMessage(response, responseType, false, originalMsg.MessageId, preview);
         originalMsg.RequiresYesNo = false;
     }
 
@@ -135,7 +148,7 @@ public sealed class ChatEngine
 
     private void OnMessageReceived(string raw, string remote)
     {
-        var (text, msgType, requiresYesNo, msgId) = WireMessage.Parse(raw);
+        var (text, msgType, requiresYesNo, msgId, replyToId, replyToText) = WireMessage.Parse(raw);
 
         if (msgType == MessageType.Ack)
         {
@@ -155,7 +168,9 @@ public sealed class ChatEngine
             IsSent = false,
             Remote = remote,
             MessageType = msgType,
-            RequiresYesNo = requiresYesNo
+            RequiresYesNo = requiresYesNo,
+            ReplyToId = replyToId,
+            ReplyToText = replyToText
         };
 
         _storage.SaveMessage(msg);

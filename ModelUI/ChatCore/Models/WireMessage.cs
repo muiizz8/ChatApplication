@@ -21,6 +21,14 @@ public sealed class WireMessage
     [JsonProperty("msgId")]
     public string MsgId { get; set; } = "";
 
+    /// <summary>MessageId of the message being replied to (empty if not a reply).</summary>
+    [JsonProperty("replyToId")]
+    public string ReplyToId { get; set; } = "";
+
+    /// <summary>Short preview of the original message text so the receiver can show reply context.</summary>
+    [JsonProperty("replyToText")]
+    public string ReplyToText { get; set; } = "";
+
     public static string Serialize(ChatMessage msg)
     {
         return JsonConvert.SerializeObject(new WireMessage
@@ -28,7 +36,9 @@ public sealed class WireMessage
             MsgType = msg.MessageType.ToString(),
             Text = msg.Text,
             RequiresYesNo = msg.RequiresYesNo,
-            MsgId = msg.MessageId
+            MsgId = msg.MessageId,
+            ReplyToId = msg.ReplyToId,
+            ReplyToText = msg.ReplyToText
         });
     }
 
@@ -46,7 +56,7 @@ public sealed class WireMessage
     /// <summary>
     /// Parses an incoming wire string. Falls back gracefully if it is plain text (legacy).
     /// </summary>
-    public static (string text, MessageType type, bool requiresYesNo, string messageId) Parse(string raw)
+    public static (string text, MessageType type, bool requiresYesNo, string messageId, string replyToId, string replyToText) Parse(string raw)
     {
         if (!string.IsNullOrWhiteSpace(raw) && raw.TrimStart().StartsWith('{'))
         {
@@ -57,12 +67,12 @@ public sealed class WireMessage
                 {
                     var type = Enum.TryParse<MessageType>(w.MsgType, out var t) ? t : MessageType.Message;
                     if (type == MessageType.Ack || !string.IsNullOrEmpty(w.Text))
-                        return (w.Text, type, w.RequiresYesNo, w.MsgId ?? "");
+                        return (w.Text, type, w.RequiresYesNo, w.MsgId ?? "", w.ReplyToId ?? "", w.ReplyToText ?? "");
                 }
             }
             catch { /* fall through to plain text */ }
         }
 
-        return (raw, MessageType.Message, false, "");
+        return (raw, MessageType.Message, false, "", "", "");
     }
 }

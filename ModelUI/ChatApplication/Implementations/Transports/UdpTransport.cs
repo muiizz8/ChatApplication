@@ -62,7 +62,7 @@ public sealed class UdpTransport : IMessagingTransport
             return;
         }
         _client.SendAsync(message);
-        DebugMessage?.Invoke("Sent telemetry (UDP)");
+        DebugMessage?.Invoke("Message sent (UDP)");
     }
 
     public void Dispose()

@@ -36,7 +36,7 @@ public class SqliteChatStorage : IChatStorage
         {
             Name    = msg.Remote,
             JSON    = msg.Text,
-            AnyData = $"{msg.TimeStamp:O}|{msg.IsSent}|{msg.MessageType}|{msg.RequiresYesNo}|{msg.MessageId}"
+            AnyData = $"{msg.TimeStamp:O}|{msg.IsSent}|{msg.MessageType}|{msg.RequiresYesNo}|{msg.MessageId}|{msg.ReplyToId}|{Uri.EscapeDataString(msg.ReplyToText)}"
         }, "ChatMessages");
     }
 
@@ -66,7 +66,9 @@ public class SqliteChatStorage : IChatStorage
                 IsSent         = parts.Length > 1 && bool.TryParse(parts[1], out var sent) && sent,
                 MessageType    = msgType,
                 RequiresYesNo  = requiresYesNo,
-                MessageId      = parts.Length > 4 ? parts[4] : ""
+                MessageId      = parts.Length > 4 ? parts[4] : "",
+                ReplyToId      = parts.Length > 5 ? parts[5] : "",
+                ReplyToText    = parts.Length > 6 ? Uri.UnescapeDataString(parts[6]) : ""
             });
         }
         return result;

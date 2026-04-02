@@ -152,10 +152,12 @@ public sealed class ChatViewModel : INotifyPropertyChanged
 
     private void SwitchTransport(string protocol)
     {
+        var wasRunning = _engine.IsServerRunning;
         IMessagingTransport transport = protocol == "TCP"
             ? new TcpTransport()
             : new UdpTransport();
         _engine.SetTransport(transport);
+        if (wasRunning) _engine.StartServer();
         OnPropertyChanged(nameof(IsTcp));
     }
 

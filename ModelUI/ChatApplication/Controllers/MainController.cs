@@ -6,7 +6,6 @@ using ChatApplication.Common;
 using ChatApplication.Implementations.Config;
 using ChatApplication.Implementations.Transports;
 using ChatCore.Models;
-using Newtonsoft.Json;
 
 namespace ChatApplication.Controllers;
 
@@ -92,32 +91,6 @@ public sealed class MainController
         RecreateUdpService();
     }
 
-    public void SendJson()
-    {
-        if (!EnsureUdpReady("send JSON")) return;
-
-        var token = new TelemetryData
-        {
-            m_airborneInd = true,
-            m_vcs = "123",
-            m_latitude = 33.333,
-            m_longitude = 73.333,
-            m_altitude = 10000
-        };
-
-        string jsonString = JsonConvert.SerializeObject(token);
-        _udp.Send(jsonString);
-        NotifyInfo("Telemetry JSON sent.", "Send JSON");
-
-        _logs.Add(new LogEntry
-        {
-            TimeStampUtc = DateTime.UtcNow,
-            Direction = "TX",
-            Remote = SelectedInstance == null ? "" : $"{SelectedInstance.RemoteIp}:{SelectedInstance.RemotePort}",
-            Json = jsonString
-        });
-    }
-
     public void AddInstance()
     {
         var name = $"Instance{_instances.Count + 1}";
@@ -173,9 +146,6 @@ public sealed class MainController
 
         _udp.MessageReceived += (json, remote) =>
         {
-            var telem = JsonConvert.DeserializeObject<TelemetryData>(json);
-            if (telem != null) telem.m_vcs = "modified";
-
             Dispatcher.UIThread.Post(() =>
             {
                 _logs.Add(new LogEntry
@@ -183,7 +153,7 @@ public sealed class MainController
                     TimeStampUtc = DateTime.UtcNow,
                     Direction = "RX",
                     Remote = remote,
-                    Json = JsonConvert.SerializeObject(telem)
+                    Json = json
                 });
             });
         };
