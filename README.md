@@ -73,9 +73,6 @@ InstanceId=InstanceA
 Names=InstanceA, InstanceB
 ```
 
-## 🖼️ Preview
-
-![Application Screenshot](ModelUI/Docs/Screenshot%20(52).png)
 
 ## 🤝 Contributing
 
