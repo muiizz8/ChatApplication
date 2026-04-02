@@ -1,0 +1,168 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui"
+	xmlns:modelUi="clr-namespace:ChatApplication"
+	x:Class="ChatApplication.WindowMain"
+	Width="940" Height="640"
+	WindowStartupLocation="CenterScreen"
+	Icon="avares://ChatApplication/Assets/main.ico"
+	Classes="sample-presenter app-window"
+	Title="">
+
+	<DockPanel>
+
+		<!-- ── Title Bar ──────────────────────────────────────────────────── -->
+		<actipro:WindowTitleBar DockPanel.Dock="Top">
+			<actipro:WindowTitleBar.Resources>
+				<actipro:ComparisonConverter x:Key="RightContentMarginConverter">
+					<actipro:ComparisonConverter.TrueResult>
+						<Thickness>0,0,20,0</Thickness>
+					</actipro:ComparisonConverter.TrueResult>
+					<actipro:ComparisonConverter.FalseResult>
+						<Thickness>0,0,0,0</Thickness>
+					</actipro:ComparisonConverter.FalseResult>
+				</actipro:ComparisonConverter>
+			</actipro:WindowTitleBar.Resources>
+
+			<actipro:WindowTitleBar.LeftContent>
+				<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+					<Button x:Name="applicationButton"
+					        Margin="0,0,14,0"
+					        ContentTemplate="{actipro:GlyphTemplate Menu16}"
+					        Theme="{actipro:ControlTheme TitleBarButton}"
+					        Click="ApplicationButton_OnClick"
+					        ToolTip.Tip="Toggle Panel" />
+					<Border CornerRadius="10"
+					        Width="34" Height="34"
+					        Background="{actipro:ThemeResource Container2BackgroundBrush}"
+					        BorderBrush="{actipro:ThemeResource Container2BorderBrush}"
+					        BorderThickness="1"
+					        VerticalAlignment="Center">
+						<Image Source="/Assets/main_48.png"
+						       Width="22" Height="22"
+						       IsHitTestVisible="False" />
+					</Border>
+					<StackPanel Margin="10,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False">
+						<TextBlock Name="subtitleTextBlock"
+						           FontSize="11"
+						           Opacity="0.55"
+						           TextTrimming="CharacterEllipsis" />
+						<TextBlock Name="titleTextBlock"
+						           Margin="0,-1,0,0"
+						           FontSize="16"
+						           FontWeight="SemiBold"
+						           TextTrimming="CharacterEllipsis" />
+					</StackPanel>
+				</StackPanel>
+			</actipro:WindowTitleBar.LeftContent>
+
+			<actipro:WindowTitleBar.RightContent>
+				<actipro:ToggleThemeButton
+					Margin="{Binding $parent[actipro:WindowTitleBar].HasCaptionButtons, Converter={StaticResource RightContentMarginConverter}}"
+					Theme="{actipro:ControlTheme TitleBarToggleThemeButton}"
+					ToolTip.Tip="Toggle Theme" />
+			</actipro:WindowTitleBar.RightContent>
+		</actipro:WindowTitleBar>
+
+		<!-- ── Status Bar ─────────────────────────────────────────────────── -->
+		<Border DockPanel.Dock="Bottom"
+		        Background="{actipro:ThemeResource StatusBarBackgroundBrush}"
+		        BorderBrush="{actipro:ThemeResource StatusBarBorderBrush}"
+		        BorderThickness="{actipro:ThemeResource StatusBarBorderThickness}"
+		        TextElement.Foreground="{actipro:ThemeResource StatusBarForegroundBrush}">
+			<Grid Margin="0,0,0,1" ColumnDefinitions="*,Auto,Auto">
+				<TextBlock Margin="{actipro:ScaledThickness '2.5,0.5'}" Name="statusTextBlock" Text="Ready" />
+				<TextBlock Grid.Column="1" Margin="{actipro:ScaledThickness '0,0.5'}" Name="versionTextBlock" />
+				<actipro:WindowResizeGrip Grid.Column="2" />
+			</Grid>
+		</Border>
+
+		<!-- ── Body (Sidebar + Content) ───────────────────────────────────── -->
+		<Border BorderBrush="{actipro:ThemeResource Container2BorderBrush}" BorderThickness="0,1,0,0">
+			<SplitView x:Name="splitView"
+			           DisplayMode="Inline"
+			           IsPaneOpen="False"
+			           OpenPaneLength="226"
+			           PanePlacement="Left">
+
+				<!-- Sidebar -->
+				<SplitView.Pane>
+					<Border Classes="sidebar-surface" Padding="18,22">
+						<StackPanel Spacing="18">
+
+							<!-- App identity -->
+							<StackPanel HorizontalAlignment="Center" Spacing="10">
+								<Border HorizontalAlignment="Center"
+								        CornerRadius="18"
+								        Width="68" Height="68"
+								        Background="{actipro:ThemeResource Container2BackgroundBrush}"
+								        BorderBrush="{actipro:ThemeResource Container2BorderBrush}"
+								        BorderThickness="1"
+								        BoxShadow="0 4 18 0 #1A000000">
+									<Image Source="/Assets/main_256.png"
+									       Width="44" Height="44"
+									       IsHitTestVisible="False" />
+								</Border>
+
+								<TextBlock Name="sidebarTitleTextBlock"
+								           HorizontalAlignment="Center"
+								           FontSize="16"
+								           FontWeight="SemiBold"
+								           Text="ChatApplication" />
+
+								<!-- Status pill -->
+								<Border HorizontalAlignment="Center"
+								        Background="{actipro:ThemeResource Container2BackgroundBrush}"
+								        BorderBrush="{actipro:ThemeResource Container2BorderBrush}"
+								        BorderThickness="1"
+								        CornerRadius="20"
+								        Padding="10,4">
+									<StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+										<Ellipse Width="7" Height="7" Fill="#22C55E" VerticalAlignment="Center" />
+										<TextBlock Name="ConnectionAstStatusTextBlock"
+										           Text="Active"
+										           FontSize="11"
+										           FontWeight="SemiBold"
+										           VerticalAlignment="Center" />
+									</StackPanel>
+								</Border>
+							</StackPanel>
+
+							<Separator />
+
+							<!-- Feature list -->
+							<StackPanel Spacing="12">
+								<TextBlock Text="FEATURES"
+								           FontSize="10"
+								           FontWeight="SemiBold"
+								           Opacity="0.4" />
+								<StackPanel Spacing="7">
+									<TextBlock Text="&#x2022;  UDP and TCP messaging" FontSize="12" Opacity="0.72" />
+									<TextBlock Text="&#x2022;  JSON payload support"   FontSize="12" Opacity="0.72" />
+									<TextBlock Text="&#x2022;  Multi-instance routing"  FontSize="12" Opacity="0.72" />
+								</StackPanel>
+							</StackPanel>
+
+						</StackPanel>
+					</Border>
+				</SplitView.Pane>
+
+				<!-- Main content -->
+				<TransitioningContentControl x:Name="transitionControl">
+					<TransitioningContentControl.PageTransition>
+						<modelUi:DirectionalPageSlide
+							Orientation="Horizontal"
+							Duration="{actipro:AnimationSetting EmphasizedMoveDuration}"
+							SlideInEasing="{actipro:AnimationSetting EmphasizedMoveEasing}"
+							SlideOutEasing="{actipro:AnimationSetting EmphasizedMoveEasing}" />
+					</TransitioningContentControl.PageTransition>
+				</TransitioningContentControl>
+
+			</SplitView>
+		</Border>
+
+	</DockPanel>
+</Window>

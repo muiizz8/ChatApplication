@@ -1,0 +1,99 @@
+<Styles
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui">
+
+	<Styles.Resources>
+		<ResourceDictionary>
+
+			<x:Double x:Key="SampleWideMaxWidth">1350</x:Double>
+
+			<!-- Chat bubble colors — light / dark variants -->
+			<ResourceDictionary.ThemeDictionaries>
+				<ResourceDictionary x:Key="Light">
+					<SolidColorBrush x:Key="ChatSentBubbleBrush"    Color="#4F7EF5" />
+					<SolidColorBrush x:Key="ChatSentBubbleTextBrush" Color="#FFFFFF" />
+				</ResourceDictionary>
+				<ResourceDictionary x:Key="Dark">
+					<SolidColorBrush x:Key="ChatSentBubbleBrush"    Color="#3B6FE0" />
+					<SolidColorBrush x:Key="ChatSentBubbleTextBrush" Color="#F0F4FF" />
+				</ResourceDictionary>
+			</ResourceDictionary.ThemeDictionaries>
+
+		</ResourceDictionary>
+	</Styles.Resources>
+
+	<!-- ── Window ──────────────────────────────────────────────────────── -->
+	<Style Selector="Window.app-window">
+		<Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI, system-ui, sans-serif" />
+		<Setter Property="FontSize" Value="13" />
+	</Style>
+
+	<!-- ── Cards / Surfaces ────────────────────────────────────────────── -->
+	<Style Selector="Border.card">
+		<Setter Property="Background"     Value="{actipro:ThemeResource Container1BackgroundBrush}" />
+		<Setter Property="BorderBrush"    Value="{actipro:ThemeResource Container1BorderBrush}" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="CornerRadius"   Value="{actipro:ScaledCornerRadius 2}" />
+		<Setter Property="Padding"        Value="{actipro:ScaledThickness 12}" />
+		<Setter Property="BoxShadow"      Value="0 2 8 0 #0D000000, 0 8 24 0 #0A000000" />
+	</Style>
+
+	<Style Selector="Border.sidebar-surface">
+		<Setter Property="Background"     Value="{actipro:ThemeResource Container2BackgroundBrush}" />
+		<Setter Property="BorderBrush"    Value="{actipro:ThemeResource Container2BorderBrush}" />
+		<Setter Property="BorderThickness" Value="0,0,1,0" />
+	</Style>
+
+	<!-- ── Typography ──────────────────────────────────────────────────── -->
+	<Style Selector="TextBlock.section-title">
+		<Setter Property="FontSize"   Value="16" />
+		<Setter Property="FontWeight" Value="SemiBold" />
+	</Style>
+	<Style Selector="TextBlock.section-subtitle">
+		<Setter Property="FontSize"  Value="12" />
+		<Setter Property="Opacity"   Value="0.55" />
+	</Style>
+	<Style Selector="TextBlock.h2">
+		<Setter Property="FontSize"   Value="15" />
+		<Setter Property="FontWeight" Value="SemiBold" />
+	</Style>
+
+	<!-- ── Buttons ─────────────────────────────────────────────────────── -->
+	<Style Selector="Button">
+		<Setter Property="MinHeight" Value="34" />
+		<Setter Property="Padding"   Value="14,6" />
+	</Style>
+
+	<!-- ── sample-presenter / sample-layout-panel ──────────────────────── -->
+	<Style Selector=":is(Control).sample-presenter">
+		<Style Selector="^ > ScrollViewer">
+			<Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+			<Setter Property="VerticalScrollBarVisibility"   Value="Auto" />
+			<Style Selector="^ > :is(StackPanel)">
+				<Setter Property="Margin"   Value="{actipro:ScaledThickness 6}" />
+				<Setter Property="MaxWidth" Value="{StaticResource SampleWideMaxWidth}" />
+			</Style>
+		</Style>
+	</Style>
+
+	<Style Selector=":is(Panel).sample-layout-panel">
+		<Setter Property="Margin"   Value="{actipro:ScaledThickness 6}" />
+		<Setter Property="MaxWidth" Value="{StaticResource SampleWideMaxWidth}" />
+	</Style>
+
+	<!-- ── MeshGradientPresenter.banner ────────────────────────────────── -->
+	<Style Selector="actipro|MeshGradientPresenter.banner">
+		<Setter Property="Background"    Value="#6898ed" />
+		<Setter Property="CornerRadius"  Value="{actipro:ScaledCornerRadius 1.5}" />
+		<Setter Property="Nodes">
+			<actipro:MeshGradientNodes>
+				<actipro:MeshGradientNode Center="51%,64%" Color="#5cbadd" />
+				<actipro:MeshGradientNode Center="3%,22%"  Color="#6871ed" />
+				<actipro:MeshGradientNode Center="26%,31%" Color="#6898ed" />
+				<actipro:MeshGradientNode Center="94%,7%"  Color="#6871ed" />
+			</actipro:MeshGradientNodes>
+		</Setter>
+	</Style>
+
+</Styles>
