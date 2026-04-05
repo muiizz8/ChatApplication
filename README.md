@@ -1,52 +1,81 @@
-# UDP JSON Dashboard (RxGUI)
+# ChatApplication
 
-A professional, cross-platform telemetry dashboard built with **Avalonia UI** and **.NET 9**. This tool provides a real-time interface for monitoring, testing, and interacting with telemetry systems using JSON-formatted data over UDP.
+A professional, cross-platform tactical messaging application built with **Avalonia UI** and **.NET 9**. Designed for structured, reliable communication between instances using a typed message protocol over UDP, TCP, or Proto.Actor transports.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![.NET](https://img.shields.io/badge/.NET-9.0-purple.svg)
 ![AvaloniaUI](https://img.shields.io/badge/AvaloniaUI-11.3-red.svg)
 
-## 🎥 Demo
-
+## Demo
 
 https://github.com/user-attachments/assets/df0cef9c-ba75-4b53-8a8b-bd483e303150
 
+---
 
+## Key Features
+
+- **Multi-Transport Messaging:** Switch between UDP, TCP, and Proto.Actor transports at runtime without restarting the server.
+- **Typed Message Protocol:** Structured message types — Machine Request/Response and Pilot Request/Response — with automatic type detection based on reply context.
+- **Request/Response Tracking:** Every message carries a unique ID (`msgId`). Replies link back to the original via `replyToId` and show an inline preview of the quoted message.
+- **Tactical Track Numbers (STTN/dTTN):** Source and Destination Tactical Track Numbers are embedded in every wire message for sender/receiver identification.
+- **Delivery Acknowledgment:** Automatic ACK on message receipt; NAK support for negative acknowledgment with `IsDeliveryFailed` state surfaced in the UI.
+- **Reply Context UI:** Composing a reply automatically sets the correct response type and shows a reply banner — no manual type selection required.
+- **Instance Management:** Add, configure, and switch between named network instances (Local/Remote IP + Port) from the sidebar. New instances are persisted to `Config.inf` immediately.
+- **Persistent Configuration:** INI-based `Config.inf` managed via `Salaros.ConfigParser` for easy portability.
+- **Data Persistence:** Integrated SQLite storage for chat history.
+- **Modern UI/UX:** Built on **Actipro Software** controls and **Avalonia UI** with a dark-themed, professional layout.
 
 ---
 
-## 🚀 Key Features
+## Technology Stack
 
-- **Real-time Telemetry:** Seamlessly send and receive telemetry data via UDP.
-- **Multi-Instance Management:** Easily configure and switch between different network profiles (Local/Remote IP and Ports).
-- **Flexible JSON Editor:** Edit telemetry payloads with a built-in editor using string literals for maximum flexibility, bypassing the need for fixed data classes.
-- **Comprehensive Logging:** View incoming (RX) and outgoing (TX) messages with timestamps and endpoint details.
-- **Persistent Configuration:** All settings are stored in an organized `Config.inf` file for easy portability.
-- **Modern UI/UX:** Leveraging **Actipro Software** controls and **Avalonia UI** for a high-performance, themed user experience.
-- **Data Persistence:** Integrated SQLite support for long-term data management.
+| Layer | Technology |
+|---|---|
+| Framework | .NET 9.0 |
+| UI | [Avalonia UI](https://avaloniaui.net/) v11.3.12 |
+| UI Components | [Actipro Software Avalonia Controls](https://www.actiprosoftware.com/products/controls/avalonia) |
+| Networking | [NetCoreServer](https://github.com/chronoxor/NetCoreServer) (UDP/TCP) |
+| Actor Transport | [Proto.Actor](https://proto.actor/) v1.5.2 |
+| JSON | [Newtonsoft.Json](https://www.newtonsoft.com/json) |
+| Database | [sqlite-net-pcl](https://github.com/praeclarum/sqlite-net) |
+| Configuration | [Salaros.ConfigParser](https://github.com/salaros/config-parser) |
 
-## 🛠️ Technology Stack
+---
 
-- **Framework:** .NET 9.0
-- **UI Framework:** [Avalonia UI](https://avaloniaui.net/) (v11.3.12)
-- **Networking:** [NetCoreServer](https://github.com/chronoxor/NetCoreServer) for high-performance UDP communication.
-- **JSON Handling:** [Newtonsoft.Json](https://www.newtonsoft.com/json) for robust serialization/deserialization.
-- **UI Components:** [Actipro Software Avalonia Controls](https://www.actiprosoftware.com/products/controls/avalonia) for professional-grade UI elements.
-- **Database:** [sqlite-net-pcl](https://github.com/praeclarum/sqlite-net) for lightweight data storage.
-- **Configuration:** Salaros.ConfigParser for INI-based configuration management.
+## Project Structure
 
-## 🏁 Getting Started
+```
+ChatApplication/
+├── ModelUI/
+│   ├── ChatCore/                   # Transport-agnostic core library
+│   │   ├── Engine/ChatEngine.cs    # Central message bus
+│   │   └── Models/                 # ChatMessage, WireMessage, MessageType, MessageTypeHelper
+│   └── ChatApplication/            # Avalonia UI host
+│       ├── UI/Views/ChatView       # Main chat panel
+│       ├── UIForms/
+│       │   ├── WindowMain          # Shell window + sidebar
+│       │   └── AddInstanceWindow   # Add instance dialog
+│       └── Implementations/
+│           ├── Transports/         # UdpTransport, TcpTransport, ProtoActorTransport
+│           ├── Config/             # IniConfigProvider
+│           └── Storage/            # SQLite storage
+└── Config.inf                      # Runtime configuration
+```
+
+---
+
+## Getting Started
 
 ### Prerequisites
 
-- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) installed on your machine.
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 
 ### Installation & Run
 
 1. **Clone the repository:**
    ```bash
    git clone <repository-url>
-   cd udp-json-dashboard
+   cd ChatApplication
    ```
 
 2. **Restore dependencies:**
@@ -56,14 +85,20 @@ https://github.com/user-attachments/assets/df0cef9c-ba75-4b53-8a8b-bd483e303150
 
 3. **Run the application:**
    ```bash
-   dotnet run --project "ModelUI-master (Copy)/RxGUI/RxGUI.csproj"
+   dotnet run --project ModelUI/ChatApplication/ChatApplication.csproj
    ```
 
-## ⚙️ Configuration
+---
 
-The application uses a `Config.inf` file located in the root directory to manage instances and network settings. While these can be modified via the UI, the structure is as follows:
+## Configuration
+
+The application reads `Config.inf` at startup. You can edit it directly or manage instances through the sidebar UI.
 
 ```ini
+[Config]
+MainTitle=ChatApplication
+SubTitle=Chat
+
 [Network]
 LocalIp=127.0.0.1
 LocalPort=9000
@@ -74,26 +109,78 @@ RemotePort=9001
 InstanceId=InstanceA
 
 [Instances]
-Names=InstanceA, InstanceB
+Names=InstanceA, InstanceB, InstanceC
+
+[InstanceA]
+LocalIp=127.0.0.1
+LocalPort=9000
+RemoteIp=127.0.0.1
+RemotePort=9001
+
+[InstanceB]
+LocalIp=127.0.0.1
+LocalPort=9001
+RemoteIp=127.0.0.1
+RemotePort=9000
+
+[InstanceC]
+LocalIp=127.0.0.1
+LocalPort=5000
+RemoteIp=127.0.0.1
+RemotePort=5001
 ```
 
-## 📖 Usage
+---
 
-1. **Setup Instances:** Use the sidebar to add or select a network instance.
-2. **Start Server:** Click **Start Server** to begin listening for incoming telemetry on your local port.
-3. **Send Telemetry:**
-   - Prepare your JSON payload in the editor.
-   - Click **Send JSON** to transmit the data to the configured remote endpoint.
-4. **Monitor Logs:** Switch to the **Logs** view to inspect real-time traffic, including raw JSON payloads and metadata.
+## Wire Message Format
 
-## 🤝 Contributing
+Every message is sent as JSON over the selected transport:
 
-Contributions are welcome! Please feel free to submit a Pull Request or open an issue for any bugs or feature requests.
+```json
+{
+  "msgType": "MachineRequest",
+  "text": "System status check required",
+  "msgId": "550e8400-e29b-41d4-a716-446655440000",
+  "replyToId": "",
+  "replyToText": "",
+  "sttn": "A001",
+  "dttn": "B002",
+  "requiresYesNo": false
+}
+```
 
-## 🎖️ Credits
+### Message Types
 
-Special thanks to **[@uxmanz](https://github.com/uxmanz)** for creating the **Base Model UI ViewPanels**. His template significantly streamlined the development process, allowing for easy expansion and customization of the dashboard components.
+| Indicator | Enum | Direction |
+|---|---|---|
+| `MR_Req` | `MachineRequest` | Machine → Pilot |
+| `MR_Res` | `MachineResponse` | Pilot → Machine |
+| `PR_Req` | `PilotRequest` | Pilot → Machine |
+| `PR_Res` | `PilotResponse` | Machine → Pilot |
+| `ACK` | `Ack` | Either (delivery confirmation, not shown in UI) |
+| `NAK` | `Nak` | Either (negative acknowledgment, not shown in UI) |
 
-## 📄 License
+---
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Usage
+
+1. **Select an Instance:** Pick a network profile from the sidebar or add a new one with **+ Add Instance**.
+2. **Choose Transport:** Select UDP, TCP, or ProtoActor from the protocol dropdown.
+3. **Start Server:** Click **Start Server** to begin listening on the configured local port.
+4. **Send a Message:** Type in the message box and press **Send** or hit Enter. The message type is automatically set to `PilotRequest` for new messages.
+5. **Reply to a Message:** Click a received message to set reply context — the type switches automatically to the correct response type and a reply banner appears above the input.
+6. **Yes/No Responses:** Messages sent with **Requires Yes/No** enabled show inline **Yes** / **No** buttons for the recipient.
+
+---
+
+## Contributing
+
+Contributions are welcome. Please open an issue or submit a pull request for bugs or feature requests.
+
+## Credits
+
+Special thanks to **[@uxmanz](https://github.com/uxmanz)** for the base Model UI ViewPanels template.
+
+## License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
