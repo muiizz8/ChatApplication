@@ -146,6 +146,42 @@
 								</StackPanel>
 							</StackPanel>
 
+							<Separator />
+
+							<!-- Instance Management -->
+							<StackPanel Spacing="12">
+								<TextBlock Text="INSTANCES"
+								           FontSize="10"
+								           FontWeight="SemiBold"
+								           Opacity="0.4" />
+								
+								<!-- Instances List -->
+								<ListBox x:Name="InstancesListBox"
+								         BorderThickness="1"
+								         BorderBrush="{actipro:ThemeResource Container2BorderBrush}"
+								         Background="{actipro:ThemeResource Container2BackgroundBrush}"
+								         Height="120"
+								         Padding="8">
+									<ListBox.ItemTemplate>
+										<DataTemplate>
+											<TextBlock Text="{Binding Name}" FontSize="11" />
+										</DataTemplate>
+									</ListBox.ItemTemplate>
+								</ListBox>
+
+								<!-- Add Instance Button -->
+								<Button x:Name="AddInstanceButton"
+								        Click="AddInstanceButton_OnClick"
+								        Classes="accent"
+								        Padding="12,8"
+								        HorizontalContentAlignment="Center">
+									<StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" HorizontalAlignment="Center">
+										<TextBlock Text="+" FontSize="14" FontWeight="SemiBold" />
+										<TextBlock Text="Add Instance" FontSize="12" VerticalAlignment="Center" />
+									</StackPanel>
+								</Button>
+							</StackPanel>
+
 						</StackPanel>
 					</Border>
 				</SplitView.Pane>

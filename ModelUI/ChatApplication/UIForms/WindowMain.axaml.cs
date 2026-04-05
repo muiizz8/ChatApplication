@@ -8,8 +8,12 @@ using Database;
 using ChatApplication.UI.Views;
 using ChatApplication.Common;
 using ChatApplication.Implementations.Storage;
+using ChatApplication.Implementations.Config;
+using ChatCore.Models;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 
 namespace ChatApplication;
@@ -40,6 +44,9 @@ public partial class WindowMain : Window
         subtitleTextBlock.Text = Globals.SubTitle;
 
         transitionControl.Content = ChatView; // Set initial view
+        
+        // Load instances list
+        LoadInstancesList();
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,6 +116,49 @@ public partial class WindowMain : Window
     private void ApplicationButton_OnClick(object? sender, RoutedEventArgs e)
     {
         splitView.IsPaneOpen = !splitView.IsPaneOpen;
+    }
+
+    /// <summary>
+    /// Opens the Add New Instance dialog when the Add Instance button is clicked.
+    /// </summary>
+    private async void AddInstanceButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        var dialog = new AddInstanceWindow();
+        var result = await dialog.ShowDialog<InstanceConfig?>(this);
+        
+        if (result != null)
+        {
+            // Load existing instances, add the new one, and save
+            var configProvider = new IniConfigProvider();
+            var instances = configProvider.GetInstances().ToList();
+            instances.Add(result);
+            configProvider.SaveInstances(instances);
+            
+            // Refresh the instances list in UI
+            LoadInstancesList();
+        }
+    }
+
+    /// <summary>
+    /// Loads and displays all instances in the sidebar listbox.
+    /// </summary>
+    private void LoadInstancesList()
+    {
+        try
+        {
+            var configProvider = new IniConfigProvider();
+            var instances = configProvider.GetInstances().ToList();
+            InstancesListBox.Items.Clear();
+            foreach (var instance in instances)
+            {
+                InstancesListBox.Items.Add(instance);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error if needed
+            System.Diagnostics.Debug.WriteLine($"Error loading instances: {ex.Message}");
+        }
     }
 
     /// <summary>

@@ -7,5 +7,6 @@ public enum MessageType
     MachineResponse, // Machine responds to pilot (MR_Rec)
     PilotRequest,    // Pilot asks machine something (PR_Req)
     PilotResponse,   // Pilot responds to machine (PR_Rec)
-    Ack              // Delivery acknowledgment (never shown in UI)
+    Ack,             // Delivery acknowledgment (never shown in UI)
+    Nak              // Negative acknowledgment / Error (never shown in UI)
 }

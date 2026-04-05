@@ -39,6 +39,7 @@
 		<PackageReference Include="ActiproSoftware.Controls.Avalonia.Themes.ColorPicker" Version="25.2.2" />
 		<PackageReference Include="ActiproSoftware.Controls.Avalonia.Themes.DataGrid" Version="25.2.2" />
 		<PackageReference Include="NetCoreServer" Version="8.0.7" />
+		<PackageReference Include="Proto.Actor" Version="1.5.2" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
