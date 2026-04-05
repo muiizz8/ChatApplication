@@ -24,8 +24,7 @@ public sealed class ChatViewModel : INotifyPropertyChanged
     public ObservableCollection<InstanceConfig> Instances { get; } = new();
     public ObservableCollection<string> Contacts { get; } = new();
 
-    public List<string> Protocols { get; } = ["UDP", "TCP"];
-    public List<string> MessageTypeNames { get; } = ["MSG", "MR_Req", "MR_Rec", "PR_Req", "PR_Rec"];
+    public List<string> Protocols { get; } = ["UDP", "TCP", "ProtoActor"];
 
     private string _selectedProtocol = "UDP";
     public string SelectedProtocol
@@ -40,22 +39,67 @@ public sealed class ChatViewModel : INotifyPropertyChanged
         }
     }
 
-    private string _selectedMessageTypeName = "MSG";
-    public string SelectedMessageTypeName
+    /// <summary>
+    /// The message being replied to. When set, outgoing message will be a Response type.
+    /// </summary>
+    private ChatMessage? _replyingToMessage;
+    public ChatMessage? ReplyingToMessage
     {
-        get => _selectedMessageTypeName;
+        get => _replyingToMessage;
         set
         {
-            _selectedMessageTypeName = value;
+            _replyingToMessage = value;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(IsRequestMessageType));
-            // Clear RequiresYesNo when switching away from a request type
-            if (!IsRequestMessageType) RequiresYesNo = false;
+            OnPropertyChanged(nameof(HasReplyContext));
+            OnPropertyChanged(nameof(ReplyContextLabel));
+            OnPropertyChanged(nameof(CurrentMessageType));
         }
     }
 
-    public bool IsRequestMessageType =>
-        SelectedMessageTypeName is "MR_Req" or "PR_Req";
+    /// <summary>
+    /// Gets the automatically determined message type based on context.
+    /// New messages from Pilot are PR_Req, replies are PR_Res.
+    /// </summary>
+    public MessageType CurrentMessageType
+    {
+        get
+        {
+            // If replying to a message, automatically determine response type
+            if (ReplyingToMessage != null)
+            {
+                return MessageTypeHelper.GetResponseType(ReplyingToMessage.MessageType);
+            }
+
+            // New message from Pilot is always a Pilot Request
+            return MessageType.PilotRequest;
+        }
+    }
+
+    /// <summary>
+    /// Gets the display string for the current message type.
+    /// </summary>
+    public string CurrentMessageTypeLabel =>
+        MessageTypeHelper.GetIndicator(CurrentMessageType);
+
+    /// <summary>
+    /// Whether we are currently replying to a message.
+    /// </summary>
+    public bool HasReplyContext => ReplyingToMessage != null;
+
+    /// <summary>
+    /// Display label for reply context (e.g., "Replying to Machine Request").
+    /// </summary>
+    public string ReplyContextLabel
+    {
+        get
+        {
+            if (ReplyingToMessage == null)
+                return "";
+
+            var originalType = MessageTypeHelper.GetIndicator(ReplyingToMessage.MessageType);
+            return $"(Replying to: {originalType})";
+        }
+    }
 
     private bool _requiresYesNo;
     public bool RequiresYesNo
@@ -153,9 +197,12 @@ public sealed class ChatViewModel : INotifyPropertyChanged
     private void SwitchTransport(string protocol)
     {
         var wasRunning = _engine.IsServerRunning;
-        IMessagingTransport transport = protocol == "TCP"
-            ? new TcpTransport()
-            : new UdpTransport();
+        IMessagingTransport transport = protocol switch
+        {
+            "TCP" => new TcpTransport(),
+            "ProtoActor" => new ProtoActorTransport(),
+            _ => new UdpTransport() // Default to UDP
+        };
         _engine.SetTransport(transport);
         if (wasRunning) _engine.StartServer();
         OnPropertyChanged(nameof(IsTcp));
@@ -169,25 +216,64 @@ public sealed class ChatViewModel : INotifyPropertyChanged
     public void SendMessage()
     {
         if (string.IsNullOrWhiteSpace(MessageText)) return;
-        var msgType = SelectedMessageTypeName switch
-        {
-            "MR_Req" => MessageType.MachineRequest,
-            "MR_Rec" => MessageType.MachineResponse,
-            "PR_Req" => MessageType.PilotRequest,
-            "PR_Rec" => MessageType.PilotResponse,
-            _        => MessageType.Message
-        };
-        _engine.SendMessage(MessageText, msgType, RequiresYesNo);
+
+        // Use the automatically determined message type
+        _engine.SendMessage(MessageText, CurrentMessageType, requiresYesNo: RequiresYesNo);
         MessageText = string.Empty;
+        ReplyingToMessage = null;  // Clear reply context after sending
     }
 
-    public void SendYesNoResponse(ChatMessage originalMsg, string response) =>
-        _engine.SendResponse(originalMsg, response);
+    /// <summary>
+    /// Sends a "Yes" quick response if RequiresYesNo is enabled.
+    /// </summary>
+    public void SendQuickYes()
+    {
+        SendMessage("Yes");
+    }
+
+    /// <summary>
+    /// Sends a "No" quick response if RequiresYesNo is enabled.
+    /// </summary>
+    public void SendQuickNo()
+    {
+        SendMessage("No");
+    }
+
+    /// <summary>
+    /// Sends a message with the automatically determined type and clears reply context.
+    /// </summary>
+    private void SendMessage(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+
+        _engine.SendMessage(text, CurrentMessageType, requiresYesNo: false);
+        MessageText = string.Empty;
+        ReplyingToMessage = null;
+    }
+
+    public void SetReplyingTo(ChatMessage message)
+    {
+        ReplyingToMessage = message;
+        // Focus on message input (you may need to add method to ChatView code-behind)
+    }
+
+    public void CancelReply()
+    {
+        ReplyingToMessage = null;
+    }
 
     public void ClearChatHistory()
     {
         _engine.ClearHistory();
         Messages.Clear();
+    }
+
+    /// <summary>
+    /// Sends a quick Yes/No response to a received message with proper reply context.
+    /// </summary>
+    public void SendQuickResponse(ChatMessage originalMsg, string response)
+    {
+        _engine.SendResponse(originalMsg, response);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

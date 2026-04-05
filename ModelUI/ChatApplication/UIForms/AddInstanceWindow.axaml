@@ -1,0 +1,109 @@
+<Window
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:actipro="http://schemas.actiprosoftware.com/avaloniaui"
+	x:Class="ChatApplication.AddInstanceWindow"
+	Width="450" Height="480"
+	WindowStartupLocation="CenterOwner"
+	Title="Add New Instance"
+	Icon="avares://ChatApplication/Assets/main.ico">
+
+	<DockPanel Margin="20">
+		<!-- Title -->
+		<TextBlock DockPanel.Dock="Top"
+		           Margin="0,0,0,20"
+		           FontSize="18"
+		           FontWeight="SemiBold"
+		           Text="Create New Instance" />
+
+		<!-- Form -->
+		<StackPanel DockPanel.Dock="Top" Spacing="16">
+
+			<!-- Instance Name -->
+			<StackPanel Spacing="6">
+				<TextBlock FontSize="12" FontWeight="SemiBold" Text="Instance Name*" />
+				<TextBox x:Name="InstanceNameTextBox"
+				         Watermark="e.g., Instance1"
+				         Padding="10,8"
+				         Background="{actipro:ThemeResource Container2BackgroundBrush}"
+				         BorderBrush="{actipro:ThemeResource Container2BorderBrush}"
+				         BorderThickness="1" />
+			</StackPanel>
+
+			<Separator />
+
+			<!-- Local Configuration -->
+			<TextBlock FontSize="11" FontWeight="SemiBold" Opacity="0.7" Text="LOCAL CONFIGURATION" />
+			
+			<Grid ColumnDefinitions="1*,1*" RowDefinitions="Auto,Auto">
+				<!-- Local IP -->
+				<StackPanel Grid.Row="0" Grid.Column="0" Spacing="6" Margin="0,0,6,12">
+					<TextBlock FontSize="12" FontWeight="SemiBold" Text="Local IP*" />
+					<TextBox x:Name="LocalIpTextBox"
+					         Text="127.0.0.1"
+					         Padding="10,8"
+					         Background="{actipro:ThemeResource Container2BackgroundBrush}"
+					         BorderBrush="{actipro:ThemeResource Container2BorderBrush}"
+					         BorderThickness="1" />
+				</StackPanel>
+
+				<!-- Local Port -->
+				<StackPanel Grid.Row="0" Grid.Column="1" Spacing="6" Margin="0,0,0,12">
+					<TextBlock FontSize="12" FontWeight="SemiBold" Text="Local Port*" />
+					<TextBox x:Name="LocalPortTextBox"
+					         Text="9000"
+					         Padding="10,8"
+					         Background="{actipro:ThemeResource Container2BackgroundBrush}"
+					         BorderBrush="{actipro:ThemeResource Container2BorderBrush}"
+					         BorderThickness="1" />
+				</StackPanel>
+			</Grid>
+
+			<Separator />
+
+			<!-- Remote Configuration -->
+			<TextBlock FontSize="11" FontWeight="SemiBold" Opacity="0.7" Text="REMOTE CONFIGURATION" />
+
+			<Grid ColumnDefinitions="1*,1*" RowDefinitions="Auto,Auto">
+				<!-- Remote IP -->
+				<StackPanel Grid.Row="0" Grid.Column="0" Spacing="6" Margin="0,0,6,0">
+					<TextBlock FontSize="12" FontWeight="SemiBold" Text="Remote IP*" />
+					<TextBox x:Name="RemoteIpTextBox"
+					         Text="127.0.0.1"
+					         Padding="10,8"
+					         Background="{actipro:ThemeResource Container2BackgroundBrush}"
+					         BorderBrush="{actipro:ThemeResource Container2BorderBrush}"
+					         BorderThickness="1" />
+				</StackPanel>
+
+				<!-- Remote Port -->
+				<StackPanel Grid.Row="0" Grid.Column="1" Spacing="6">
+					<TextBlock FontSize="12" FontWeight="SemiBold" Text="Remote Port*" />
+					<TextBox x:Name="RemotePortTextBox"
+					         Text="9001"
+					         Padding="10,8"
+					         Background="{actipro:ThemeResource Container2BackgroundBrush}"
+					         BorderBrush="{actipro:ThemeResource Container2BorderBrush}"
+					         BorderThickness="1" />
+				</StackPanel>
+			</Grid>
+
+		</StackPanel>
+
+		<!-- Buttons -->
+		<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+			<Button x:Name="CancelButton"
+			        Click="CancelButton_OnClick"
+			        Padding="16,8"
+			        Content="Cancel" />
+			<Button x:Name="CreateButton"
+			        Click="CreateButton_OnClick"
+			        Classes="accent"
+			        Padding="16,8"
+			        Content="Create" />
+		</StackPanel>
+
+	</DockPanel>
+</Window>

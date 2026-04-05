@@ -23,6 +23,12 @@ public sealed class ChatMessage : INotifyPropertyChanged
     /// <summary>Short preview of the original message text, for display in the reply bubble.</summary>
     public string ReplyToText { get; set; } = "";
 
+    /// <summary>Source Tactical Track Number (sender identification - like a phone number).</summary>
+    public string STTN { get; set; } = "";
+
+    /// <summary>Destination Tactical Track Number (receiver identification - like a phone number).</summary>
+    public string dTTN { get; set; } = "";
+
     public bool HasReplyContext => !string.IsNullOrEmpty(ReplyToId);
 
     private bool _isDelivered;
@@ -34,6 +40,19 @@ public sealed class ChatMessage : INotifyPropertyChanged
         {
             if (_isDelivered == value) return;
             _isDelivered = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _isDeliveryFailed;
+    /// <summary>True when the remote side has sent a NAK (negative acknowledgment) for this sent message.</summary>
+    public bool IsDeliveryFailed
+    {
+        get => _isDeliveryFailed;
+        set
+        {
+            if (_isDeliveryFailed == value) return;
+            _isDeliveryFailed = value;
             OnPropertyChanged();
         }
     }

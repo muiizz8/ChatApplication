@@ -18,7 +18,8 @@ public sealed class ChatEngine
     public event Action<string>? ContactAdded;
     public event Action<string>? DebugMessageAdded;
     public event Action<string>? ConnectionStatusChanged;
-    public event Action<string>? MessageDelivered;   // delivers msgId
+    public event Action<string>? MessageDelivered;      // delivers msgId when ACK received
+    public event Action<string>? MessageDeliveryFailed; // delivers msgId when NAK received
 
     public InstanceConfig? CurrentInstance => _currentInstance;
     public string CurrentProtocol => _currentProtocol;
@@ -148,11 +149,17 @@ public sealed class ChatEngine
 
     private void OnMessageReceived(string raw, string remote)
     {
-        var (text, msgType, requiresYesNo, msgId, replyToId, replyToText) = WireMessage.Parse(raw);
+        var (text, msgType, requiresYesNo, msgId, replyToId, replyToText, sttn, dttn) = WireMessage.Parse(raw);
 
         if (msgType == MessageType.Ack)
         {
             MessageDelivered?.Invoke(msgId);
+            return;
+        }
+
+        if (msgType == MessageType.Nak)
+        {
+            MessageDeliveryFailed?.Invoke(msgId);
             return;
         }
 
@@ -170,7 +177,9 @@ public sealed class ChatEngine
             MessageType = msgType,
             RequiresYesNo = requiresYesNo,
             ReplyToId = replyToId,
-            ReplyToText = replyToText
+            ReplyToText = replyToText,
+            STTN = sttn,
+            dTTN = dttn
         };
 
         _storage.SaveMessage(msg);

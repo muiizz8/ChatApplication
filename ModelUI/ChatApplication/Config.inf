@@ -1,6 +1,6 @@
 [Config]
-MainTitle=RXGUI_Application
-SubTitle=RXGUI
+MainTitle=ChatApplication
+SubTitle=Chat
 
 [Network]
 LocalIp=127.0.0.1
@@ -12,7 +12,7 @@ RemotePort=9001
 InstanceId=InstanceA
 
 [Instances]
-Names=InstanceA, InstanceB
+Names=InstanceA, InstanceB, InstanceC
 
 [InstanceA]
 LocalIp=127.0.0.1
@@ -21,7 +21,13 @@ RemoteIp=127.0.0.1
 RemotePort=9001
 
 [InstanceB]
+
 LocalIp=127.0.0.1
 LocalPort=9001
 RemoteIp=127.0.0.1
 RemotePort=9000
+[InstanceC]
+LocalIp=127.0.0.1
+LocalPort=5000
+RemoteIp=127.0.0.1
+RemotePort=5001

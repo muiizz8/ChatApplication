@@ -28,6 +28,18 @@ public partial class ChatView : UserControl
     private void Disconnect_Click(object? sender, RoutedEventArgs e)   => viewModel.Disconnect();
     private void Send_Click(object? sender, RoutedEventArgs e)         => viewModel.SendMessage();
     private void ClearChat_Click(object? sender, RoutedEventArgs e)    => viewModel.ClearChatHistory();
+    
+    private void QuickYes_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is ChatMessage msg)
+            viewModel.SendQuickResponse(msg, "Yes");
+    }
+    
+    private void QuickNo_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is ChatMessage msg)
+            viewModel.SendQuickResponse(msg, "No");
+    }
 
     private void MessageInput_KeyDown(object? sender, KeyEventArgs e)
     {
@@ -36,17 +48,5 @@ public partial class ChatView : UserControl
             viewModel.SendMessage();
             e.Handled = true;
         }
-    }
-
-    private void YesButton_Click(object? sender, RoutedEventArgs e)
-    {
-        if ((sender as Button)?.DataContext is ChatMessage msg)
-            viewModel.SendYesNoResponse(msg, "Yes");
-    }
-
-    private void NoButton_Click(object? sender, RoutedEventArgs e)
-    {
-        if ((sender as Button)?.DataContext is ChatMessage msg)
-            viewModel.SendYesNoResponse(msg, "No");
     }
 }
