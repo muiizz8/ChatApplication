@@ -8,7 +8,9 @@ A professional, cross-platform tactical messaging application built with **Avalo
 
 ## Demo
 
-https://github.com/user-attachments/assets/df0cef9c-ba75-4b53-8a8b-bd483e303150
+
+https://github.com/user-attachments/assets/82e64269-42b5-462a-aaa9-a75a4c27eb4a
+
 
 ---
 
